@@ -1,17 +1,16 @@
-# Laboratorio 04 - Persistencia con Spring Boot y Hibernate
+# Semana 03 - API REST con Spring Boot y JPA
 
-API REST desarrollada con **Spring Boot**, **Spring Data JPA** y **Hibernate** para practicar persistencia de datos y relaciones entre entidades.
+API REST desarrollada con **Spring Boot** y **Spring Data JPA** para gestionar las entidades principales de un sistema de ventas.
 
 ## Tecnologías
 
 - Java 21
 - Spring Boot
-- Spring Web
+- Spring Web MVC
 - Spring Data JPA
 - Hibernate
-- MariaDB
+- MySQL
 - Maven
-- Postman
 
 ## Arquitectura
 
@@ -26,83 +25,71 @@ Repository
     ↓
 JPA / Hibernate
     ↓
-MariaDB
+Base de datos
 ```
 
-## Relaciones implementadas
+## Entidades
 
-### OneToMany / ManyToOne
+El sistema está compuesto por:
 
-Relación entre categorías y productos.
+- Categoria
+- Producto
+- Cliente
+- Empleado
+- Venta
+- Detalle
+
+## Relaciones
 
 ```text
-Categoria 1 ─────── N Producto
+Categoria 1 ───── N Producto
+
+Cliente   1 ───── N Venta
+
+Empleado  1 ───── N Venta
+
+Venta     1 ───── N Detalle
+
+Producto  1 ───── N Detalle
 ```
 
-La clave foránea `categoria_id` se almacena en `producto`.
+Las relaciones se implementan mediante `@OneToMany`, `@ManyToOne` y `@JoinColumn`.
 
-### OneToOne
+## Endpoints
 
-Relación entre usuarios y perfiles.
+La API proporciona operaciones CRUD para los principales recursos:
 
 ```text
-Usuario 1 ─────── 1 Perfil
+/api/categorias
+/api/productos
+/api/clientes
+/api/empleados
+/api/ventas
+/api/detalles
 ```
 
-Se utiliza `@OneToOne`, `@JoinColumn` y cascada para gestionar ambas entidades.
+Las operaciones disponibles incluyen:
 
-### ManyToMany
+```http
+GET    /api/{recurso}
+GET    /api/{recurso}/{id}
+POST   /api/{recurso}
+PUT    /api/{recurso}/{id}
+DELETE /api/{recurso}/{id}
+```
 
-Relación entre estudiantes y cursos.
+Se utiliza `ResponseEntity` para controlar las respuestas HTTP de las operaciones.
+
+## Estructura
 
 ```text
-Estudiante N ─────── N Curso
-              │
-              ▼
-      estudiante_curso
+src/main/java/com/tecsup/
+├── controller/
+├── model/
+├── repository/
+├── service/
+└── Demo01Application.java
 ```
-
-La tabla intermedia `estudiante_curso` es gestionada mediante `@JoinTable` y contiene las claves:
-
-- `estudiante_id`
-- `curso_id`
-
-También se valida que un estudiante no pueda inscribirse dos veces en el mismo curso.
-
-## Endpoints principales
-
-### Usuarios
-
-```http
-POST   /api/usuarios
-GET    /api/usuarios
-GET    /api/usuarios/{id}
-DELETE /api/usuarios/{id}
-```
-
-### Cursos
-
-```http
-POST   /api/cursos
-GET    /api/cursos
-```
-
-### Estudiantes
-
-```http
-POST   /api/estudiantes
-GET    /api/estudiantes
-GET    /api/estudiantes/{id}
-GET    /api/estudiantes/{id}/cursos
-POST   /api/estudiantes/{id}/cursos/{cursoId}
-DELETE /api/estudiantes/{id}/cursos/{cursoId}
-```
-
-## Configuración
-
-La conexión a la base de datos se configura mediante `application.properties`.
-
-Las credenciales locales no se almacenan en el repositorio.
 
 ## Ejecución
 
@@ -116,10 +103,10 @@ La API estará disponible por defecto en:
 http://localhost:8080
 ```
 
-## Autor
+## Autores
 
-**Victor Manuel Santamaria Fabian**  
+**Victor Manuel Santamaria Fabian**
 
-**Diego Daniel Panez Rondinel**  
+**Diego Daniel Panez Rondinel**
 
 Diseño y Desarrollo de Software - Tecsup
