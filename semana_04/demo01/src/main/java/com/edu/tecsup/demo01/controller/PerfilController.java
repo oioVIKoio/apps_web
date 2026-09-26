@@ -3,28 +3,28 @@ package com.edu.tecsup.demo01.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import com.edu.tecsup.demo01.models.Categoria;
-import com.edu.tecsup.demo01.service.CategoriaService;
+import com.edu.tecsup.demo01.models.Perfil;
+import com.edu.tecsup.demo01.service.PerfilService;
 
 @RestController
-@RequestMapping("/api/categorias")
-public class CategoriaController {
+@RequestMapping("api/perfiles")
+public class PerfilController {
 
     @Autowired
-    private CategoriaService service;
-
+    private PerfilService service;
+    
     @GetMapping
-    public List<Categoria> listar() {
+    public List<Perfil> listar() {
         return service.listar();
     }
 
     @PostMapping
-    public Categoria guardar(@RequestBody Categoria categoria) {
-        return service.guardar(categoria);
+    public Perfil guardar(@RequestBody Perfil perfil) {
+        return service.guardar(perfil);
     }
 
     @GetMapping("/{id}")
-    public Categoria obtener(@PathVariable Long id) {
+    public Perfil obtener(@PathVariable Long id) {
         return service.obtener(id);
     }
 
