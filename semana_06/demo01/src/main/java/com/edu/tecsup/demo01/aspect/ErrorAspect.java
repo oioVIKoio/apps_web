@@ -22,9 +22,12 @@ public class ErrorAspect {
         auditoriaService.registrar(
                 "ERROR",
                 joinPoint.getSignature().getName(),
-                ex.getMessage()
+                ex.getMessage(),
+                "SISTEMA"
         );
 
-        System.out.println("ERROR AOP: " + ex.getMessage());
+        System.out.println(
+                "ERROR AOP: " + ex.getMessage()
+        );
     }
 }

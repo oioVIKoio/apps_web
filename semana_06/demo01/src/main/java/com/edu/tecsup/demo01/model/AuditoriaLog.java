@@ -1,6 +1,5 @@
 package com.edu.tecsup.demo01.model;
 
-
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -16,15 +15,18 @@ public class AuditoriaLog {
     private LocalDateTime fecha;
     private String detalle;
 
-    public AuditoriaLog() {}
+    private String usuario;
 
-    public AuditoriaLog(String accion, String metodo, String detalle) {
+    public AuditoriaLog() {
+    }
+
+    public AuditoriaLog(String accion, String metodo, String detalle, String usuario) {
         this.accion = accion;
         this.metodo = metodo;
         this.fecha = LocalDateTime.now();
         this.detalle = detalle;
+        this.usuario = usuario;
     }
-
 
     public Long getId() {
         return id;
@@ -64,5 +66,13 @@ public class AuditoriaLog {
 
     public void setDetalle(String detalle) {
         this.detalle = detalle;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
     }
 }

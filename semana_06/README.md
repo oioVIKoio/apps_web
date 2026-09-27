@@ -1,8 +1,8 @@
-# Semana 06 - Auditoría con Spring AOP
+# Semana 06 - Auditoría y Control de Acceso con Spring AOP
 
 Laboratorio desarrollado para implementar **Programación Orientada a Aspectos (AOP)** en una API REST con Spring Boot.
 
-Se amplió el proyecto de productos de la semana anterior incorporando auditoría de operaciones, logging y manejo de errores sin mezclar esta lógica transversal directamente con la lógica principal de `ProductoService`.
+Se amplió la API de productos desarrollada previamente incorporando **auditoría de operaciones, logging, manejo de errores y control de acceso mediante usuarios y roles**, manteniendo estas funcionalidades separadas de la lógica principal de `ProductoService`.
 
 ## Tecnologías
 
@@ -70,34 +70,111 @@ Ejemplo:
 
 ### AuditoriaAspect
 
-Registra las operaciones realizadas correctamente sobre los productos.
+`AuditoriaAspect` intercepta las operaciones realizadas sobre los productos y registra información sobre cada acción.
 
-Las acciones auditadas son:
+Las operaciones auditadas son:
 
 | Operación | Acción | Información registrada |
 |---|---|---|
-| Crear producto | `CREAR` | Registro de un nuevo producto |
+| Crear producto | `CREAR` | Registro del producto y usuario |
 | Listar productos | `LISTAR` | Cantidad de productos obtenidos |
 | Actualizar producto | `ACTUALIZAR` | ID del producto actualizado |
-| Eliminar producto | `ELIMINAR` | Eliminación del producto |
+| Eliminar producto | `ELIMINAR` | ID del producto eliminado |
+| Error de operación | `ERROR` | Información del error producido |
+
+## Control de acceso por usuarios y roles
+
+Se incorporó un control de acceso mediante los headers HTTP:
+
+```text
+Usuario
+Rol
+```
+
+Los usuarios utilizados para las pruebas son:
+
+| Usuario | Rol |
+|---|---|
+| Ricardo | `ADMIN` |
+| Ana | `USER` |
+| Luis | `USER` |
+
+Los permisos implementados son:
+
+| Operación | ADMIN | USER |
+|---|:---:|:---:|
+| Listar productos | Sí | Sí |
+| Crear productos | Sí | Sí |
+| Actualizar productos | Sí | No |
+| Eliminar productos | Sí | No |
+
+El rol `USER` puede consultar y registrar productos, mientras que las operaciones de actualización y eliminación permanecen restringidas al rol `ADMIN`.
+
+## Validación de acceso
+
+Antes de ejecutar determinadas operaciones, AOP verifica los headers `Usuario` y `Rol`.
+
+Si no se proporcionan los datos requeridos, la API responde:
+
+```text
+401 Unauthorized
+```
+
+Ejemplo:
+
+```text
+Debe enviar Usuario y Rol
+```
+
+Si el usuario existe pero no posee los permisos necesarios para realizar una operación, la API responde:
+
+```text
+403 Forbidden
+```
+
+Ejemplo:
+
+```text
+Acceso denegado
+```
+
+De esta forma se diferencia entre una solicitud sin identificación válida y una solicitud cuyo usuario no tiene autorización suficiente.
 
 ## Información dinámica con JoinPoint
 
-Para evitar registros de auditoría con información fija, se utiliza `JoinPoint` para acceder a los parámetros recibidos por los métodos interceptados.
+Se utiliza `JoinPoint` para obtener información de los métodos interceptados y evitar registros de auditoría con valores fijos.
 
-En la actualización se obtiene dinámicamente el ID:
+### Actualización
+
+Para obtener el ID recibido por el método:
 
 ```java
 Long id = (Long) joinPoint.getArgs()[0];
 ```
 
-Esto permite generar registros como:
+Esto permite registrar:
 
 ```text
 Se actualizó producto con ID: 5
 ```
 
-Para el listado se captura el resultado retornado:
+### Eliminación
+
+El mismo mecanismo permite recuperar el ID del producto eliminado:
+
+```java
+Long id = (Long) joinPoint.getArgs()[0];
+```
+
+Generando registros como:
+
+```text
+Se eliminó producto ID: 5
+```
+
+### Listado
+
+Para el listado se captura el resultado retornado mediante `@AfterReturning`:
 
 ```java
 @AfterReturning(
@@ -106,13 +183,13 @@ Para el listado se captura el resultado retornado:
 )
 ```
 
-La cantidad se obtiene mediante:
+La cantidad de productos se obtiene mediante:
 
 ```java
 resultado.size()
 ```
 
-generando registros como:
+Esto permite generar dinámicamente:
 
 ```text
 Se obtuvieron 5 productos
@@ -120,33 +197,34 @@ Se obtuvieron 5 productos
 
 ## Persistencia de auditoría
 
-Los eventos son almacenados en la entidad `AuditoriaLog`.
-
-Cada registro contiene:
-
-- Acción realizada.
-- Método interceptado.
-- Fecha y hora.
-- Detalle de la operación.
-
-Los registros son almacenados en:
+Los eventos son almacenados mediante la entidad `AuditoriaLog` en la tabla:
 
 ```text
 auditoria_log
 ```
 
-Ejemplo:
+Cada registro puede contener:
+
+- Acción realizada.
+- Método interceptado.
+- Fecha y hora.
+- Detalle de la operación.
+- Usuario responsable.
+
+Ejemplos:
 
 ```text
-ACTUALIZAR | actualizar | Se actualizó producto con ID: 5
-LISTAR     | listar      | Se obtuvieron 5 productos
+CREAR     | guardar    | Se registró un producto          | Ana (USER)
+LISTAR    | listar     | Se obtuvieron 5 productos        | Ana (USER)
+ACTUALIZAR| actualizar | Se actualizó producto con ID: 5 | Ricardo (ADMIN)
+ELIMINAR  | eliminar   | Se eliminó producto ID: 5       | Ricardo (ADMIN)
 ```
 
 ## Manejo de errores con AOP
 
 Se implementó `ErrorAspect` utilizando `@AfterThrowing`.
 
-Cuando ocurre una excepción dentro de `ProductoService`, el aspecto captura el error y lo registra mediante `AuditoriaService`.
+Cuando ocurre una excepción dentro de `ProductoService`, el aspecto puede interceptar el error y registrarlo mediante `AuditoriaService`.
 
 Por ejemplo, al intentar eliminar un producto inexistente:
 
@@ -154,21 +232,32 @@ Por ejemplo, al intentar eliminar un producto inexistente:
 DELETE /api/productos/9999
 ```
 
-se genera el mensaje:
+se puede producir:
 
 ```text
 Producto con ID 9999 no existe
 ```
 
-y el evento puede almacenarse en `auditoria_log` con la acción:
+El evento se registra con la acción:
 
 ```text
 ERROR
 ```
 
-De esta manera, los errores no solamente son mostrados en consola, sino que también pueden quedar registrados en la base de datos.
+De esta manera, los errores pueden conservarse como parte de la trazabilidad de la aplicación y no únicamente mostrarse en consola.
 
-## Endpoints probados
+## DTO y validaciones
+
+El proyecto conserva el uso de `ProductoDTO` y Jakarta Bean Validation para validar la información recibida por la API.
+
+Entre las principales anotaciones utilizadas se encuentran:
+
+- `@NotBlank` para campos de texto obligatorios.
+- `@Positive` para valores que deben ser mayores a cero.
+- `@Min` para establecer valores mínimos.
+- `@Valid` para ejecutar las validaciones desde el Controller.
+
+## Endpoints
 
 ### Listar productos
 
@@ -217,40 +306,75 @@ PUT /api/productos/{id}
 DELETE /api/productos/{id}
 ```
 
-## Validaciones
-
-El proyecto conserva las validaciones implementadas mediante `ProductoDTO` y Jakarta Bean Validation.
-
-Entre las principales validaciones se encuentran:
-
-- `@NotBlank` para campos obligatorios.
-- `@Positive` para valores mayores a cero.
-- `@Min` para establecer valores mínimos.
-- `@Valid` para ejecutar las validaciones desde el Controller.
-
 ## Pruebas realizadas
 
-Se realizaron pruebas funcionales utilizando Postman para verificar:
+Las pruebas funcionales se realizaron utilizando Postman.
 
-- Registro de productos mediante POST.
-- Actualización mediante PUT.
-- Consulta mediante GET.
-- Eliminación mediante DELETE.
-- Manejo de productos inexistentes.
-- Registro automático de las operaciones en `auditoria_log`.
-- Registro de errores mediante AOP.
-- Ejecución de los aspectos mediante los logs de la aplicación.
+Se verificó:
+
+- Registro de productos mediante `POST`.
+- Consulta de productos mediante `GET`.
+- Actualización mediante `PUT`.
+- Eliminación mediante `DELETE`.
+- Auditoría automática de las operaciones.
+- Registro de información dinámica mediante AOP.
+- Registro del usuario responsable de las operaciones.
+- Acceso de `USER` al listado de productos.
+- Creación de productos mediante `USER`.
+- Restricción de operaciones según el rol.
+- Respuesta `401 Unauthorized` cuando faltan los headers requeridos.
+- Respuesta `403 Forbidden` cuando el rol no tiene permisos.
+- Manejo y registro de errores mediante AOP.
+
+## Flujo de una petición con control de acceso
+
+```text
+Cliente / Postman
+        ↓
+Headers: Usuario + Rol
+        ↓
+ProductoController
+        ↓
+AuditoriaAspect
+        ↓
+Validación de usuario y permisos
+        ↓
+ProductoService
+        ↓
+ProductoRepository
+        ↓
+MariaDB
+        ↓
+AuditoriaAspect
+        ↓
+AuditoriaService
+        ↓
+auditoria_log
+```
+
+Esto permite mantener separadas tres responsabilidades:
+
+```text
+ProductoService
+→ lógica de productos
+
+AuditoriaAspect
+→ auditoría y control de acceso
+
+AuditoriaService
+→ persistencia de los eventos
+```
 
 ## Configuración local
 
-La configuración de la base de datos se mantiene separada utilizando el perfil local:
+La configuración de la base de datos se mantiene separada mediante un perfil local:
 
 ```text
 application.properties
 application-local.properties
 ```
 
-El archivo `application-local.properties` contiene la configuración específica del entorno local y no debe versionarse en el repositorio.
+`application-local.properties` contiene la configuración específica del entorno y no debe versionarse en el repositorio.
 
 ## Ejecución
 
@@ -268,14 +392,16 @@ http://localhost:8080
 
 ## Resultado
 
-La implementación permite mantener separada la lógica principal de productos de funcionalidades transversales como auditoría, logging y manejo de errores.
+Se implementó una API REST que combina persistencia, validaciones y Programación Orientada a Aspectos.
 
-Spring AOP permite interceptar las operaciones realizadas en la capa de servicio y registrar información dinámica sin agregar directamente esta lógica dentro de cada operación del servicio.
+Spring AOP permitió incorporar **logging, auditoría, manejo de errores y control de acceso** sin agregar directamente estas responsabilidades a la lógica principal de `ProductoService`.
 
-## Autor
+Además, la auditoría fue ampliada para registrar información dinámica como el usuario responsable, la cantidad de productos consultados y los identificadores involucrados en las operaciones.
+
+## Autores
 
 **Victor Manuel Santamaria Fabian**  
 
-**Diego Daniel Panez Rondinel** 
+**Diego Daniel Panez Rondinel**
 
 Diseño y Desarrollo de Software - Tecsup
