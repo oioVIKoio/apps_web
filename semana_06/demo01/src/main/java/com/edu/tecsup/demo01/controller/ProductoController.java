@@ -63,32 +63,30 @@ public class ProductoController {
     public ResponseEntity<?> actualizar(@PathVariable Long id,
                                         @Valid @RequestBody ProductoDTO dto) {
 
-        Producto existente = service.obtener(id);
+        Producto producto = new Producto();
+        producto.setNombre(dto.getNombre());
+        producto.setPrecio(dto.getPrecio());
+        producto.setStock(dto.getStock());
+        producto.setCategoria(dto.getCategoria());
 
-        if (existente == null) {
+        Producto actualizado = service.actualizar(id, producto);
+
+        if (actualizado == null) {
             return ResponseEntity.status(404).body("Producto no existe");
         }
 
-        existente.setNombre(dto.getNombre());
-        existente.setPrecio(dto.getPrecio());
-        existente.setStock(dto.getStock());
-        existente.setCategoria(dto.getCategoria());
-
-        return ResponseEntity.ok(service.guardar(existente));
+        return ResponseEntity.ok(actualizado);
     }
 
-    // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
 
-        Producto p = service.obtener(id);
+        try {
+            service.eliminar(id);
+            return ResponseEntity.ok("Eliminado correctamente");
 
-        if (p == null) {
-            return ResponseEntity.status(404).body("No existe");
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(404).body(ex.getMessage());
         }
-
-        service.eliminar(id);
-
-        return ResponseEntity.ok("Eliminado correctamente");
     }
 }

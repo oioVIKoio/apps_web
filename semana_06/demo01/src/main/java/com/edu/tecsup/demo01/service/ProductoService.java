@@ -29,7 +29,28 @@ public class ProductoService {
     }
 
     public void eliminar(Long id) {
+
+        if (!repo.existsById(id)) {
+            throw new RuntimeException(
+                    "Producto con ID " + id + " no existe"
+            );
+        }
+
         repo.deleteById(id);
     }
+    public Producto actualizar(Long id, Producto producto) {
 
+        Producto existente = repo.findById(id).orElse(null);
+
+        if (existente == null) {
+            return null;
+        }
+
+        existente.setNombre(producto.getNombre());
+        existente.setPrecio(producto.getPrecio());
+        existente.setStock(producto.getStock());
+        existente.setCategoria(producto.getCategoria());
+
+        return repo.save(existente);
+    }
 }
