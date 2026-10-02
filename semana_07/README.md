@@ -308,9 +308,8 @@ La aplicación permite:
 - Diferenciar respuestas `401 Unauthorized` y `403 Forbidden`.
 - Configurar credenciales sin almacenarlas directamente en el repositorio.
 
-## Autores
+## Autor
 
 **Victor Manuel Santamaria Fabian**  
-**Diego Daniel Panez Rondinel**
 
 Diseño y Desarrollo de Software - Tecsup
