@@ -1,6 +1,6 @@
-# Desarrollo de Aplicaciones Empresariales
+# Desarrollo de Aplicaciones Web
 
-Repositorio de trabajos y laboratorios del curso de Desarrollo de Aplicaciones Empresariales.
+Repositorio de trabajos y laboratorios del curso de Desarrollo de Aplicaciones Web.
 
 ## Semanas
 
