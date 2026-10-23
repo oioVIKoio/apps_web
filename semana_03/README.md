@@ -94,6 +94,7 @@ src/main/java/com/tecsup/
 ## Ejecución
 
 ```bash
+export DB_PASSWORD=<tu_contraseña>
 ./mvnw spring-boot:run
 ```
 
