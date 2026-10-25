@@ -52,3 +52,11 @@ export DB_PASSWORD=<tu_contraseña>
 cd demo01
 ./mvnw spring-boot:run
 ```
+
+## Autor
+
+**Victor Manuel Santamaria Fabian**
+
+**Diego Daniel Panez Rondinel**
+
+Diseño y Desarrollo de Software - Tecsup

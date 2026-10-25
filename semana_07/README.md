@@ -312,4 +312,6 @@ La aplicación permite:
 
 **Victor Manuel Santamaria Fabian**  
 
+**Diego Daniel Panez Rondinel**
+
 Diseño y Desarrollo de Software - Tecsup
