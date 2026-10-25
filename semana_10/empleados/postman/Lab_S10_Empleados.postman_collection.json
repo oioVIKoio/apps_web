@@ -1,0 +1,191 @@
+{
+  "info": {
+    "name": "Lab S10 - Empleados (Spring Profiles)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Cambiar baseUrl según el perfil: dev 8080, qa 8082, test 8084, prod 8086. Correr en orden: el POST guarda el id en la variable id."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "id",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Configuración del ambiente",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/configuracion",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "configuracion"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Crear empleado (201)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/empleados",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "empleados"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombres\": \"Ana\",\n  \"apellidos\": \"Torres\",\n  \"email\": \"ana@techsolutions.pe\",\n  \"sueldo\": 3500.5\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    pm.collectionVariables.set('id', pm.response.json().id);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Crear empleado inválido (400)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/empleados",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "empleados"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombres\": \"\",\n  \"apellidos\": \"Torres\",\n  \"email\": \"no-es-correo\",\n  \"sueldo\": -5\n}"
+        }
+      }
+    },
+    {
+      "name": "Listar empleados (200)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/empleados",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "empleados"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Obtener empleado (200)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/empleados/{{id}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "empleados",
+            "{{id}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Actualizar empleado (200)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/empleados/{{id}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "empleados",
+            "{{id}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombres\": \"Ana María\",\n  \"apellidos\": \"Torres\",\n  \"email\": \"ana.torres@techsolutions.pe\",\n  \"sueldo\": 4200.0\n}"
+        }
+      }
+    },
+    {
+      "name": "Eliminar empleado (200)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/empleados/{{id}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "empleados",
+            "{{id}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Obtener empleado eliminado (404)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/empleados/{{id}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "empleados",
+            "{{id}}"
+          ]
+        }
+      }
+    }
+  ]
+}
