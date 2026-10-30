@@ -1,0 +1,1148 @@
+{
+  "info": {
+    "name": "Lab S11 - Tienda",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "cliente",
+      "value": "localhost:8081"
+    },
+    {
+      "key": "categoria",
+      "value": "localhost:8082"
+    },
+    {
+      "key": "producto",
+      "value": "localhost:8083"
+    },
+    {
+      "key": "pedido",
+      "value": "localhost:8084"
+    }
+  ],
+  "item": [
+    {
+      "name": "Categoría",
+      "item": [
+        {
+          "name": "Crear Laptops",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{categoria}}/api/categorias",
+              "host": [
+                "{{categoria}}"
+              ],
+              "path": [
+                "api",
+                "categorias"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Laptops\",\n  \"estado\": \"ACTIVO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('idCategoria1', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear Accesorios",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{categoria}}/api/categorias",
+              "host": [
+                "{{categoria}}"
+              ],
+              "path": [
+                "api",
+                "categorias"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Accesorios\",\n  \"estado\": \"ACTIVO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('idCategoria2', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear Impresoras",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{categoria}}/api/categorias",
+              "host": [
+                "{{categoria}}"
+              ],
+              "path": [
+                "api",
+                "categorias"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Impresoras\",\n  \"estado\": \"ACTIVO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('idCategoria3', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear inválida",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{categoria}}/api/categorias",
+              "host": [
+                "{{categoria}}"
+              ],
+              "path": [
+                "api",
+                "categorias"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"\",\n  \"estado\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{categoria}}/api/categorias",
+              "host": [
+                "{{categoria}}"
+              ],
+              "path": [
+                "api",
+                "categorias"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{categoria}}/api/categorias/{{idCategoria1}}",
+              "host": [
+                "{{categoria}}"
+              ],
+              "path": [
+                "api",
+                "categorias",
+                "{{idCategoria1}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{categoria}}/api/categorias/{{idCategoria3}}",
+              "host": [
+                "{{categoria}}"
+              ],
+              "path": [
+                "api",
+                "categorias",
+                "{{idCategoria3}}"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Impresoras\",\n  \"estado\": \"INACTIVO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{categoria}}/api/categorias/{{idCategoria3}}",
+              "host": [
+                "{{categoria}}"
+              ],
+              "path": [
+                "api",
+                "categorias",
+                "{{idCategoria3}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener eliminada",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{categoria}}/api/categorias/{{idCategoria3}}",
+              "host": [
+                "{{categoria}}"
+              ],
+              "path": [
+                "api",
+                "categorias",
+                "{{idCategoria3}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cliente",
+      "item": [
+        {
+          "name": "Crear Juan",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{cliente}}/api/clientes",
+              "host": [
+                "{{cliente}}"
+              ],
+              "path": [
+                "api",
+                "clientes"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan\",\n  \"apellidos\": \"Pérez Gómez\",\n  \"direccion\": \"Av. Javier Prado 123, Lima\",\n  \"telefono\": \"987654321\",\n  \"nroDni\": \"12345678\",\n  \"estado\": \"ACTIVO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('idCliente1', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear María",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{cliente}}/api/clientes",
+              "host": [
+                "{{cliente}}"
+              ],
+              "path": [
+                "api",
+                "clientes"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"María\",\n  \"apellidos\": \"Ramírez Torres\",\n  \"direccion\": \"Calle Los Olivos 456\",\n  \"telefono\": \"912345678\",\n  \"nroDni\": \"87654321\",\n  \"estado\": \"ACTIVO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('idCliente2', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear inválido",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{cliente}}/api/clientes",
+              "host": [
+                "{{cliente}}"
+              ],
+              "path": [
+                "api",
+                "clientes"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan\",\n  \"apellidos\": \"Pérez Gómez\",\n  \"direccion\": \"Av. Javier Prado 123, Lima\",\n  \"telefono\": \"987654321\",\n  \"nroDni\": \"123\",\n  \"estado\": \"ACTIVO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{cliente}}/api/clientes",
+              "host": [
+                "{{cliente}}"
+              ],
+              "path": [
+                "api",
+                "clientes"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{cliente}}/api/clientes/{{idCliente1}}",
+              "host": [
+                "{{cliente}}"
+              ],
+              "path": [
+                "api",
+                "clientes",
+                "{{idCliente1}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{cliente}}/api/clientes/{{idCliente2}}",
+              "host": [
+                "{{cliente}}"
+              ],
+              "path": [
+                "api",
+                "clientes",
+                "{{idCliente2}}"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"María\",\n  \"apellidos\": \"Ramírez Torres\",\n  \"direccion\": \"Calle Los Olivos 456\",\n  \"telefono\": \"900000000\",\n  \"nroDni\": \"87654321\",\n  \"estado\": \"ACTIVO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener inexistente",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{cliente}}/api/clientes/999999",
+              "host": [
+                "{{cliente}}"
+              ],
+              "path": [
+                "api",
+                "clientes",
+                "999999"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Producto",
+      "item": [
+        {
+          "name": "Crear Laptop",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{producto}}/api/productos",
+              "host": [
+                "{{producto}}"
+              ],
+              "path": [
+                "api",
+                "productos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Laptop Lenovo ThinkPad\",\n  \"precio\": 3500.0,\n  \"stock\": 15,\n  \"categoriaId\": \"{{idCategoria1}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('idProducto1', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear Mouse",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{producto}}/api/productos",
+              "host": [
+                "{{producto}}"
+              ],
+              "path": [
+                "api",
+                "productos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Mouse Logitech M185\",\n  \"precio\": 89.9,\n  \"stock\": 50,\n  \"categoriaId\": \"{{idCategoria2}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('idProducto2', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear Teclado",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{producto}}/api/productos",
+              "host": [
+                "{{producto}}"
+              ],
+              "path": [
+                "api",
+                "productos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Teclado Mecánico Redragon\",\n  \"precio\": 199.99,\n  \"stock\": 25,\n  \"categoriaId\": \"{{idCategoria2}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('idProducto3', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear inválido",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{producto}}/api/productos",
+              "host": [
+                "{{producto}}"
+              ],
+              "path": [
+                "api",
+                "productos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Malo\",\n  \"precio\": -1,\n  \"stock\": -5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{producto}}/api/productos",
+              "host": [
+                "{{producto}}"
+              ],
+              "path": [
+                "api",
+                "productos"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener inexistente",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{producto}}/api/productos/999999",
+              "host": [
+                "{{producto}}"
+              ],
+              "path": [
+                "api",
+                "productos",
+                "999999"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pedido",
+      "item": [
+        {
+          "name": "Crear pedido 1",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{pedido}}/api/pedidos",
+              "host": [
+                "{{pedido}}"
+              ],
+              "path": [
+                "api",
+                "pedidos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fecha\": \"2026-06-10\",\n  \"idCliente\": \"{{idCliente1}}\",\n  \"total\": 3679.8,\n  \"detalles\": [\n    {\n      \"idProducto\": \"{{idProducto1}}\",\n      \"cantidad\": 1,\n      \"precio\": 3500.0\n    },\n    {\n      \"idProducto\": \"{{idProducto2}}\",\n      \"cantidad\": 2,\n      \"precio\": 89.9\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('idPedido1', pm.response.json().idPedido);",
+                  "pm.test('JSON sin bucle', () => { pm.expect(pm.response.json().detalles[0]).to.not.have.property('pedido'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear pedido 2",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{pedido}}/api/pedidos",
+              "host": [
+                "{{pedido}}"
+              ],
+              "path": [
+                "api",
+                "pedidos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fecha\": \"2026-06-10\",\n  \"idCliente\": \"{{idCliente2}}\",\n  \"total\": 579.78,\n  \"detalles\": [\n    {\n      \"idProducto\": \"{{idProducto2}}\",\n      \"cantidad\": 2,\n      \"precio\": 89.9\n    },\n    {\n      \"idProducto\": \"{{idProducto3}}\",\n      \"cantidad\": 2,\n      \"precio\": 199.99\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('idPedido2', pm.response.json().idPedido);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear sin detalles",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{pedido}}/api/pedidos",
+              "host": [
+                "{{pedido}}"
+              ],
+              "path": [
+                "api",
+                "pedidos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fecha\": \"2026-06-10\",\n  \"idCliente\": 1,\n  \"total\": 10,\n  \"detalles\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{pedido}}/api/pedidos",
+              "host": [
+                "{{pedido}}"
+              ],
+              "path": [
+                "api",
+                "pedidos"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{pedido}}/api/pedidos/{{idPedido1}}",
+              "host": [
+                "{{pedido}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "{{idPedido1}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{pedido}}/api/pedidos/{{idPedido2}}",
+              "host": [
+                "{{pedido}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "{{idPedido2}}"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fecha\": \"2026-06-11\",\n  \"idCliente\": \"{{idCliente2}}\",\n  \"total\": 89.9,\n  \"detalles\": [\n    {\n      \"idProducto\": \"{{idProducto2}}\",\n      \"cantidad\": 1,\n      \"precio\": 89.9\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Reemplaza los detalles', () => { pm.expect(pm.response.json().detalles.length).to.eql(1); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{pedido}}/api/pedidos/{{idPedido2}}",
+              "host": [
+                "{{pedido}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "{{idPedido2}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener eliminado",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{pedido}}/api/pedidos/{{idPedido2}}",
+              "host": [
+                "{{pedido}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "{{idPedido2}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

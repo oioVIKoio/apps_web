@@ -1,0 +1,13 @@
+server:
+  port: 8083
+spring:
+  application:
+    name: producto-service
+  datasource:
+    url: jdbc:mariadb://localhost:3307/bd_producto
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

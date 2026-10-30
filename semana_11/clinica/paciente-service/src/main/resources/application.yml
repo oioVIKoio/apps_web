@@ -1,0 +1,13 @@
+server:
+  port: 8085
+spring:
+  application:
+    name: paciente-service
+  datasource:
+    url: jdbc:mariadb://localhost:3307/bd_paciente
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

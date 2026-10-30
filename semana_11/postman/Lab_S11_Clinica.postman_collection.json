@@ -1,0 +1,1325 @@
+{
+  "info": {
+    "name": "Lab S11 - Clínica",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "paciente",
+      "value": "localhost:8085"
+    },
+    {
+      "key": "medico",
+      "value": "localhost:8086"
+    },
+    {
+      "key": "cita",
+      "value": "localhost:8087"
+    }
+  ],
+  "item": [
+    {
+      "name": "Paciente",
+      "item": [
+        {
+          "name": "Registrar Ana",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{paciente}}/api/pacientes",
+              "host": [
+                "{{paciente}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"45678912\",\n  \"nombres\": \"Ana\",\n  \"apellidos\": \"Quispe Rojas\",\n  \"fechaNacimiento\": \"1998-03-15\",\n  \"sexo\": \"F\",\n  \"telefono\": \"987111222\",\n  \"direccion\": \"Av. Arequipa 500, Lima\",\n  \"correo\": \"ana@correo.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('idPaciente1', pm.response.json().idPaciente);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar Luis",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{paciente}}/api/pacientes",
+              "host": [
+                "{{paciente}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"45678913\",\n  \"nombres\": \"Luis\",\n  \"apellidos\": \"Flores Díaz\",\n  \"fechaNacimiento\": \"1990-07-20\",\n  \"sexo\": \"M\",\n  \"telefono\": \"987333444\",\n  \"direccion\": \"Jr. Lima 200\",\n  \"correo\": \"luis@correo.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('idPaciente2', pm.response.json().idPaciente);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar DNI repetido",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{paciente}}/api/pacientes",
+              "host": [
+                "{{paciente}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"45678912\",\n  \"nombres\": \"Ana\",\n  \"apellidos\": \"Quispe Rojas\",\n  \"fechaNacimiento\": \"1998-03-15\",\n  \"sexo\": \"F\",\n  \"telefono\": \"987111222\",\n  \"direccion\": \"Av. Arequipa 500, Lima\",\n  \"correo\": \"ana@correo.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar inválido",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{paciente}}/api/pacientes",
+              "host": [
+                "{{paciente}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"12\",\n  \"nombres\": \"\",\n  \"apellidos\": \"\",\n  \"sexo\": \"X\",\n  \"correo\": \"malo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{paciente}}/api/pacientes",
+              "host": [
+                "{{paciente}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{paciente}}/api/pacientes/{{idPaciente1}}",
+              "host": [
+                "{{paciente}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "{{idPaciente1}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{paciente}}/api/pacientes/{{idPaciente1}}",
+              "host": [
+                "{{paciente}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "{{idPaciente1}}"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"45678912\",\n  \"nombres\": \"Ana\",\n  \"apellidos\": \"Quispe Rojas\",\n  \"fechaNacimiento\": \"1998-03-15\",\n  \"sexo\": \"F\",\n  \"telefono\": \"900111222\",\n  \"direccion\": \"Av. Arequipa 500, Lima\",\n  \"correo\": \"ana@correo.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar inexistente",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{paciente}}/api/pacientes/999999",
+              "host": [
+                "{{paciente}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "999999"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar Luis (lógico)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{paciente}}/api/pacientes/{{idPaciente2}}",
+              "host": [
+                "{{paciente}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "{{idPaciente2}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Luis queda inactivo",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{paciente}}/api/pacientes/{{idPaciente2}}",
+              "host": [
+                "{{paciente}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "{{idPaciente2}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Estado I', () => { pm.expect(pm.response.json().estado).to.eql('I'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar sin Luis",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{paciente}}/api/pacientes",
+              "host": [
+                "{{paciente}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Solo activos', () => { pm.expect(pm.response.json().every(p => p.estado === 'A')).to.be.true; });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Médico",
+      "item": [
+        {
+          "name": "Crear especialidad",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{medico}}/api/especialidades",
+              "host": [
+                "{{medico}}"
+              ],
+              "path": [
+                "api",
+                "especialidades"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Cardiología\",\n  \"descripcion\": \"Corazón y sistema circulatorio\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('idEspecialidad', pm.response.json().idEspecialidad);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear especialidad inválida",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{medico}}/api/especialidades",
+              "host": [
+                "{{medico}}"
+              ],
+              "path": [
+                "api",
+                "especialidades"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar especialidades",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{medico}}/api/especialidades",
+              "host": [
+                "{{medico}}"
+              ],
+              "path": [
+                "api",
+                "especialidades"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar Carla",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{medico}}/api/medicos",
+              "host": [
+                "{{medico}}"
+              ],
+              "path": [
+                "api",
+                "medicos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cmp\": \"CMP-1001\",\n  \"nombres\": \"Carla\",\n  \"apellidos\": \"Mendoza Vega\",\n  \"telefono\": \"999111222\",\n  \"correo\": \"carla@clinica.com\",\n  \"idEspecialidad\": \"{{idEspecialidad}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('idMedico1', pm.response.json().idMedico);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar segundo médico",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{medico}}/api/medicos",
+              "host": [
+                "{{medico}}"
+              ],
+              "path": [
+                "api",
+                "medicos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cmp\": \"CMP-1002\",\n  \"nombres\": \"Jorge\",\n  \"apellidos\": \"Mendoza Vega\",\n  \"telefono\": \"999111222\",\n  \"correo\": \"carla@clinica.com\",\n  \"idEspecialidad\": \"{{idEspecialidad}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('idMedico2', pm.response.json().idMedico);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar CMP repetido",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{medico}}/api/medicos",
+              "host": [
+                "{{medico}}"
+              ],
+              "path": [
+                "api",
+                "medicos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cmp\": \"CMP-1001\",\n  \"nombres\": \"Carla\",\n  \"apellidos\": \"Mendoza Vega\",\n  \"telefono\": \"999111222\",\n  \"correo\": \"carla@clinica.com\",\n  \"idEspecialidad\": \"{{idEspecialidad}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Especialidad inexistente",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{medico}}/api/medicos",
+              "host": [
+                "{{medico}}"
+              ],
+              "path": [
+                "api",
+                "medicos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cmp\": \"CMP-1003\",\n  \"nombres\": \"Carla\",\n  \"apellidos\": \"Mendoza Vega\",\n  \"telefono\": \"999111222\",\n  \"correo\": \"carla@clinica.com\",\n  \"idEspecialidad\": 999999\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{medico}}/api/medicos",
+              "host": [
+                "{{medico}}"
+              ],
+              "path": [
+                "api",
+                "medicos"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{medico}}/api/medicos/{{idMedico1}}",
+              "host": [
+                "{{medico}}"
+              ],
+              "path": [
+                "api",
+                "medicos",
+                "{{idMedico1}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{medico}}/api/medicos/{{idMedico1}}",
+              "host": [
+                "{{medico}}"
+              ],
+              "path": [
+                "api",
+                "medicos",
+                "{{idMedico1}}"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cmp\": \"CMP-1001\",\n  \"nombres\": \"Carla\",\n  \"apellidos\": \"Mendoza Vega\",\n  \"telefono\": \"999000111\",\n  \"correo\": \"carla@clinica.com\",\n  \"idEspecialidad\": \"{{idEspecialidad}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar inexistente",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{medico}}/api/medicos/999999",
+              "host": [
+                "{{medico}}"
+              ],
+              "path": [
+                "api",
+                "medicos",
+                "999999"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar segundo (lógico)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{medico}}/api/medicos/{{idMedico2}}",
+              "host": [
+                "{{medico}}"
+              ],
+              "path": [
+                "api",
+                "medicos",
+                "{{idMedico2}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cita",
+      "item": [
+        {
+          "name": "Registrar",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{cita}}/api/citas",
+              "host": [
+                "{{cita}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fecha\": \"2026-11-10\",\n  \"hora\": \"10:30:00\",\n  \"idPaciente\": \"{{idPaciente1}}\",\n  \"idMedico\": \"{{idMedico1}}\",\n  \"motivo\": \"Control general\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('idCita', pm.response.json().idCita);",
+                  "pm.test('Nace PROGRAMADA', () => { pm.expect(pm.response.json().estado).to.eql('PROGRAMADA'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar inválida",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{cita}}/api/citas",
+              "host": [
+                "{{cita}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"Sin datos\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Paciente inexistente",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{cita}}/api/citas",
+              "host": [
+                "{{cita}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fecha\": \"2026-11-10\",\n  \"hora\": \"10:30:00\",\n  \"idPaciente\": 999999,\n  \"idMedico\": \"{{idMedico1}}\",\n  \"motivo\": \"Control general\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Médico inexistente",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{cita}}/api/citas",
+              "host": [
+                "{{cita}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fecha\": \"2026-11-10\",\n  \"hora\": \"10:30:00\",\n  \"idPaciente\": \"{{idPaciente1}}\",\n  \"idMedico\": 999999,\n  \"motivo\": \"Control general\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Paciente inactivo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{cita}}/api/citas",
+              "host": [
+                "{{cita}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fecha\": \"2026-11-10\",\n  \"hora\": \"10:30:00\",\n  \"idPaciente\": \"{{idPaciente2}}\",\n  \"idMedico\": \"{{idMedico1}}\",\n  \"motivo\": \"Control general\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Médico inactivo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{cita}}/api/citas",
+              "host": [
+                "{{cita}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fecha\": \"2026-11-10\",\n  \"hora\": \"10:30:00\",\n  \"idPaciente\": \"{{idPaciente1}}\",\n  \"idMedico\": \"{{idMedico2}}\",\n  \"motivo\": \"Control general\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{cita}}/api/citas",
+              "host": [
+                "{{cita}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{cita}}/api/citas/{{idCita}}",
+              "host": [
+                "{{cita}}"
+              ],
+              "path": [
+                "api",
+                "citas",
+                "{{idCita}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar inexistente",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{cita}}/api/citas/999999",
+              "host": [
+                "{{cita}}"
+              ],
+              "path": [
+                "api",
+                "citas",
+                "999999"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Confirmar",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{cita}}/api/citas/{{idCita}}/estado",
+              "host": [
+                "{{cita}}"
+              ],
+              "path": [
+                "api",
+                "citas",
+                "{{idCita}}",
+                "estado"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"CONFIRMADA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Queda CONFIRMADA', () => { pm.expect(pm.response.json().estado).to.eql('CONFIRMADA'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Estado inválido",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{cita}}/api/citas/{{idCita}}/estado",
+              "host": [
+                "{{cita}}"
+              ],
+              "path": [
+                "api",
+                "citas",
+                "{{idCita}}",
+                "estado"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"NO_EXISTE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancelar",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{cita}}/api/citas/{{idCita}}/cancelar",
+              "host": [
+                "{{cita}}"
+              ],
+              "path": [
+                "api",
+                "citas",
+                "{{idCita}}",
+                "cancelar"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Queda CANCELADA', () => { pm.expect(pm.response.json().estado).to.eql('CANCELADA'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
