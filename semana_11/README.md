@@ -147,6 +147,4 @@ Levanta en el puerto `9092` y usa `bd_categoria`.
 
 **Victor Manuel Santamaria Fabian**
 
-**Diego Daniel Panez Rondinel**
-
 Diseño y Desarrollo de Software - Tecsup
