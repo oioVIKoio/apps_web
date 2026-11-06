@@ -26,7 +26,7 @@ public class ServicioService {
     }
 
     public Servicio registrar(ServicioDTO dto) {
-        if (repo.existsByNombreAndEmpresa(dto.getNombre(), dto.getEmpresa())) {
+        if (repo.existsByNombreAndEmpresaAndEstado(dto.getNombre(), dto.getEmpresa(), "A")) {
             throw new BadRequestException("Ya existe el servicio " + dto.getNombre() + " de " + dto.getEmpresa());
         }
         Servicio servicio = new Servicio();
@@ -36,7 +36,7 @@ public class ServicioService {
 
     public Servicio actualizar(Integer id, ServicioDTO dto) {
         Servicio servicio = obtener(id);
-        if (repo.existsByNombreAndEmpresaAndIdServicioNot(dto.getNombre(), dto.getEmpresa(), id)) {
+        if (repo.existsByNombreAndEmpresaAndEstadoAndIdServicioNot(dto.getNombre(), dto.getEmpresa(), "A", id)) {
             throw new BadRequestException("Ya existe el servicio " + dto.getNombre() + " de " + dto.getEmpresa());
         }
         copiar(dto, servicio);

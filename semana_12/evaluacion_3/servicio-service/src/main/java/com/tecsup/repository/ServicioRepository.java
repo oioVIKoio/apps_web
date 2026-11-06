@@ -9,7 +9,8 @@ public interface ServicioRepository extends JpaRepository<Servicio, Integer> {
 
     List<Servicio> findByEstado(String estado);
 
-    boolean existsByNombreAndEmpresa(String nombre, String empresa);
+    boolean existsByNombreAndEmpresaAndEstado(String nombre, String empresa, String estado);
 
-    boolean existsByNombreAndEmpresaAndIdServicioNot(String nombre, String empresa, Integer idServicio);
+    boolean existsByNombreAndEmpresaAndEstadoAndIdServicioNot(String nombre, String empresa, String estado,
+                                                               Integer idServicio);
 }

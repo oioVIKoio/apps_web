@@ -103,7 +103,7 @@ POST /api/recibos
 | `cliente-service` o `servicio-service` apagado | `503` · `No se pudo comunicar con servicio-service` |
 | ID que no existe, o JSON o ID con mal formato | `404`, o `400` · `La petición tiene un formato inválido` |
 
-Eliminar un cliente o un servicio cambia su `estado` de `A` a `I` y deja de salir en la lista. Así sus recibos no quedan apuntando a un registro borrado. Los errores los atiende `GlobalExceptionHandler` (`@RestControllerAdvice`) en cada servicio.
+Eliminar un cliente o un servicio cambia su `estado` de `A` a `I` y deja de salir en la lista. Un servicio eliminado se puede volver a registrar con el mismo nombre y empresa; "servicio repetido" solo se controla entre los activos. Así sus recibos no quedan apuntando a un registro borrado. Los errores los atiende `GlobalExceptionHandler` (`@RestControllerAdvice`) en cada servicio.
 
 ## Endpoints
 
@@ -144,13 +144,20 @@ Ejemplo de recibo:
 
 ## Pruebas en Postman
 
-Con los servicios levantados y **las bases de datos vacías** (para empezar de cero: apagar los servicios, correr `sql/dev.sql` y volver a levantarlos), importar [`Evaluacion_03_Pagos`](./postman/Evaluacion_03_Pagos.postman_collection.json) y correrla en orden (**Run collection**). Cada POST guarda el `id` creado en una variable.
+Con los servicios levantados, importar [`Evaluacion_03_Pagos`](./postman/Evaluacion_03_Pagos.postman_collection.json) y correrla en orden (**Run collection**). Cada POST guarda el `id` creado en una variable.
+
+La colección **se puede correr varias veces sin limpiar la base de datos**:
+
+- Antes de *Registrar Juan*, un script genera los DNI de Juan y Ana a partir de la hora, así nunca se repiten entre corridas. *Error: DNI repetido* usa el mismo DNI generado.
+- La carpeta **Limpieza** elimina al final el recibo pendiente, a Juan y los tres servicios. Como la eliminación es lógica (`estado` `I`), dejan de salir en los listados.
+- El recibo pagado no se elimina, porque esa es una regla del negocio: queda como historial.
 
 | Carpeta | Peticiones | Exitosas | De error |
 |---|---|---|---|
 | Cliente | 9 | 6 | 3 |
 | Servicio | 9 | 6 | 3 |
 | Recibo | 22 | 9 | 13 |
+| Limpieza | 5 | 5 | 0 |
 
 **Prueba de aceptación**, en la carpeta Recibo: *Registrar recibo de luz* (`PENDIENTE`) → *Marcar pagado el recibo de luz* → *Consultar el recibo pagado* (`PAGADO`).
 
