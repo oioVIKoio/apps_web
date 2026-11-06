@@ -7,7 +7,7 @@ Una empresa necesita controlar a sus clientes, los servicios que cobra (luz, agu
 | [`cliente-service/`](./cliente-service/) | CRUD de clientes |
 | [`servicio-service/`](./servicio-service/) | CRUD de servicios |
 | [`recibo-service/`](./recibo-service/) | Recibos: registro, pago y consultas |
-| [`sql/`](./sql/) | Scripts de las bases de datos: `dev.sql` (laptop) y `prod.sql` (servidor) |
+| [`sql/`](./sql/) | Scripts de las bases de datos: `prod.sql` (servidor) y `dev.sql` (vacía las bases dev para empezar de cero) |
 | [`postman/`](./postman/) | Colección con casos exitosos y fallidos |
 
 ## Requisitos
@@ -42,13 +42,7 @@ Cada servicio tiene los paquetes `model`, `dto`, `repository`, `services`, `cont
 
 ## Cómo ejecutarlo
 
-1. Crear las bases de datos con [`sql/dev.sql`](./sql/dev.sql). En dev, las tablas las crea Hibernate al arrancar. El script también borra las bases dev, así la colección se corre desde cero.
-
-```bash
-mariadb -h 127.0.0.1 -P 3307 -u root -p < sql/dev.sql
-```
-
-2. Definir la contraseña local y levantar **los tres servicios**, cada uno en su carpeta y en su propia terminal:
+1. Definir la contraseña local y levantar **los tres servicios**, cada uno en su carpeta y en su propia terminal. No hace falta crear nada antes: en dev, la base de datos se crea sola (`createDatabaseIfNotExist=true`) y Hibernate crea las tablas al arrancar (`ddl-auto: update`). Los datos se mantienen aunque se reinicie el servicio:
 
 ```bash
 export DB_PASSWORD='tu-clave'
@@ -65,9 +59,9 @@ En IntelliJ, `DB_PASSWORD` va en **Run → Edit Configurations → Environment v
 |---|---|---|
 | Puerto | 8091, 8092, 8093 | 9091, 9092, 9093 |
 | Host de la BD | `localhost:3307` | `${DB_HOST:servidor}:${DB_PORT:3306}` |
-| Base de datos | `bd_*_dev` | `bd_*` |
+| Base de datos | `bd_*_dev`, se crea sola si no existe | `bd_*`, creada con `sql/prod.sql` |
 | Usuario | `${DB_USER:root}` | `${DB_USER}`, sin valor por defecto |
-| `ddl-auto` | `update`: Hibernate crea y ajusta las tablas | `validate`: solo comprueba que las tablas coincidan con las entidades |
+| `ddl-auto` | `update`: Hibernate crea y ajusta las tablas, y los datos se mantienen | `validate`: solo comprueba que las tablas coincidan con las entidades |
 | `show-sql` | `true` | `false` |
 | URL de los otros servicios (`recibo-service`) | `http://localhost:8091` y `:8092` | `${CLIENTE_URL}` y `${SERVICIO_URL}` |
 
@@ -150,7 +144,7 @@ Ejemplo de recibo:
 
 ## Pruebas en Postman
 
-Con los servicios levantados y **las bases de datos vacías** (correr antes `sql/dev.sql` y reiniciar los servicios), importar [`Evaluacion_03_Pagos`](./postman/Evaluacion_03_Pagos.postman_collection.json) y correrla en orden (**Run collection**). Cada POST guarda el `id` creado en una variable.
+Con los servicios levantados y **las bases de datos vacías** (para empezar de cero: apagar los servicios, correr `sql/dev.sql` y volver a levantarlos), importar [`Evaluacion_03_Pagos`](./postman/Evaluacion_03_Pagos.postman_collection.json) y correrla en orden (**Run collection**). Cada POST guarda el `id` creado en una variable.
 
 | Carpeta | Peticiones | Exitosas | De error |
 |---|---|---|---|
@@ -170,7 +164,7 @@ El caso de servicio caído se prueba a mano: apagar `servicio-service` y registr
 4. Con `@RestControllerAdvice`, todos los errores salen con el mismo formato y el código HTTP correcto (400, 404, 503), en lugar de un 500 genérico.
 5. Con los perfiles, el mismo código corre en dev y prod cambiando solo la configuración. Lo sensible (contraseña, host) va en variables de entorno, no en el repositorio.
 
-**Dificultad:** el nombre que sugiere la guía, `bd_cliente`, ya lo usa el Lab S11 (el `cliente-service` de la tienda, también con una tabla `cliente`, en el puerto 8081). En la misma MariaDB, los dos proyectos habrían escrito en la misma tabla, y Hibernate (`ddl-auto: update`) la habría ido cambiando según cuál arrancara. **Solución:** en dev, bases con el sufijo `_dev` (la convención del `categoria-service` del Lab S11) y puertos 809x. Los nombres de la guía (`bd_cliente`, `bd_servicio`, `bd_recibo`) quedan para prod, que corre en otro servidor.
+**Dificultad:** el nombre que sugiere la guía, `bd_cliente`, ya lo usa el Lab S11 (el `cliente-service` de la tienda, también con una tabla `cliente`, en el puerto 8081). En la misma MariaDB, los dos proyectos habrían escrito en la misma tabla, y Hibernate la habría ido cambiando según cuál arrancara. **Solución:** en dev, bases con el sufijo `_dev` (la convención del `categoria-service` del Lab S11) y puertos 809x. Los nombres de la guía (`bd_cliente`, `bd_servicio`, `bd_recibo`) quedan para prod, que corre en otro servidor.
 
 ## Autor
 

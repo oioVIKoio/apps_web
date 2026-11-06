@@ -1,7 +1,8 @@
 -- Evaluación 03 - Gestión de pagos de servicios
 -- Una base de datos por microservicio (MariaDB, puerto 3307).
--- Perfil dev: Hibernate crea las tablas al arrancar (ddl-auto: update).
--- Las DROP dejan las bases vacías para correr la colección de Postman desde cero.
+-- Para arrancar no hace falta: en dev la base se crea sola (createDatabaseIfNotExist=true)
+-- y Hibernate crea las tablas (ddl-auto: update). Los datos se mantienen al reiniciar.
+-- Este script vacía las bases dev para empezar de cero. Correrlo con los servicios apagados.
 DROP DATABASE IF EXISTS bd_cliente_dev;
 DROP DATABASE IF EXISTS bd_servicio_dev;
 DROP DATABASE IF EXISTS bd_recibo_dev;
