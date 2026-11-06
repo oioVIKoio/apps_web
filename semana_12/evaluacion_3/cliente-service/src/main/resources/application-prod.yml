@@ -1,0 +1,11 @@
+server:
+  port: 9091
+spring:
+  datasource:
+    url: jdbc:mariadb://${DB_HOST:servidor}:${DB_PORT:3306}/bd_cliente
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false

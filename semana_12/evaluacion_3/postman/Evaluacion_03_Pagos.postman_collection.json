@@ -1,0 +1,1415 @@
+{
+  "info": {
+    "name": "Evaluación 03 - Pagos de servicios",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "cliente",
+      "value": "localhost:8091"
+    },
+    {
+      "key": "servicio",
+      "value": "localhost:8092"
+    },
+    {
+      "key": "recibo",
+      "value": "localhost:8093"
+    }
+  ],
+  "item": [
+    {
+      "name": "Cliente",
+      "item": [
+        {
+          "name": "Registrar Juan",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{cliente}}/api/clientes",
+              "host": [
+                "{{cliente}}"
+              ],
+              "path": [
+                "api",
+                "clientes"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"74589632\",\n  \"nombres\": \"Juan\",\n  \"apellidos\": \"Pérez Rojas\",\n  \"correo\": \"juan.perez@mail.com\",\n  \"telefono\": \"987654321\",\n  \"direccion\": \"Av. Cascanueces 2221, Santa Anita\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"estado = A\", () => pm.expect(pm.response.json().estado).to.eql(\"A\"));",
+                  "pm.collectionVariables.set(\"idJuan\", pm.response.json().idCliente);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar Ana",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{cliente}}/api/clientes",
+              "host": [
+                "{{cliente}}"
+              ],
+              "path": [
+                "api",
+                "clientes"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"71234567\",\n  \"nombres\": \"Ana\",\n  \"apellidos\": \"Torres Díaz\",\n  \"correo\": \"ana.torres@mail.com\",\n  \"telefono\": \"912345678\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"idAna\", pm.response.json().idCliente);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: DNI repetido",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{cliente}}/api/clientes",
+              "host": [
+                "{{cliente}}"
+              ],
+              "path": [
+                "api",
+                "clientes"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"74589632\",\n  \"nombres\": \"Otro\",\n  \"apellidos\": \"Pérez Rojas\",\n  \"correo\": \"juan.perez@mail.com\",\n  \"telefono\": \"987654321\",\n  \"direccion\": \"Av. Cascanueces 2221, Santa Anita\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: datos inválidos",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{cliente}}/api/clientes",
+              "host": [
+                "{{cliente}}"
+              ],
+              "path": [
+                "api",
+                "clientes"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"123\",\n  \"nombres\": \"\",\n  \"apellidos\": \"Ramos\",\n  \"correo\": \"correo-malo\",\n  \"telefono\": \"99\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"error en dni\", () => pm.expect(pm.response.json()).to.have.property(\"dni\"));",
+                  "pm.test(\"error en nombres\", () => pm.expect(pm.response.json()).to.have.property(\"nombres\"));",
+                  "pm.test(\"error en correo\", () => pm.expect(pm.response.json()).to.have.property(\"correo\"));",
+                  "pm.test(\"error en telefono\", () => pm.expect(pm.response.json()).to.have.property(\"telefono\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar clientes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{cliente}}/api/clientes",
+              "host": [
+                "{{cliente}}"
+              ],
+              "path": [
+                "api",
+                "clientes"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener Juan",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{cliente}}/api/clientes/{{idJuan}}",
+              "host": [
+                "{{cliente}}"
+              ],
+              "path": [
+                "api",
+                "clientes",
+                "{{idJuan}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"dni = 74589632\", () => pm.expect(pm.response.json().dni).to.eql(\"74589632\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar Juan",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{cliente}}/api/clientes/{{idJuan}}",
+              "host": [
+                "{{cliente}}"
+              ],
+              "path": [
+                "api",
+                "clientes",
+                "{{idJuan}}"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"74589632\",\n  \"nombres\": \"Juan\",\n  \"apellidos\": \"Pérez Rojas\",\n  \"correo\": \"juan.perez@mail.com\",\n  \"telefono\": \"999888777\",\n  \"direccion\": \"Av. Cascanueces 2221, Santa Anita\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"telefono = 999888777\", () => pm.expect(pm.response.json().telefono).to.eql(\"999888777\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: cliente inexistente",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{cliente}}/api/clientes/9999",
+              "host": [
+                "{{cliente}}"
+              ],
+              "path": [
+                "api",
+                "clientes",
+                "9999"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar Ana (estado I)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{cliente}}/api/clientes/{{idAna}}",
+              "host": [
+                "{{cliente}}"
+              ],
+              "path": [
+                "api",
+                "clientes",
+                "{{idAna}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Servicio",
+      "item": [
+        {
+          "name": "Registrar Luz",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{servicio}}/api/servicios",
+              "host": [
+                "{{servicio}}"
+              ],
+              "path": [
+                "api",
+                "servicios"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Luz\",\n  \"empresa\": \"Luz del Sur\",\n  \"descripcion\": \"Energía eléctrica residencial\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"idLuz\", pm.response.json().idServicio);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar Agua",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{servicio}}/api/servicios",
+              "host": [
+                "{{servicio}}"
+              ],
+              "path": [
+                "api",
+                "servicios"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Agua\",\n  \"empresa\": \"Sedapal\",\n  \"descripcion\": \"Agua potable y alcantarillado\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"idAgua\", pm.response.json().idServicio);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar Internet",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{servicio}}/api/servicios",
+              "host": [
+                "{{servicio}}"
+              ],
+              "path": [
+                "api",
+                "servicios"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Internet\",\n  \"empresa\": \"Movistar\",\n  \"descripcion\": \"Fibra óptica 300 Mbps\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"idInternet\", pm.response.json().idServicio);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: servicio repetido",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{servicio}}/api/servicios",
+              "host": [
+                "{{servicio}}"
+              ],
+              "path": [
+                "api",
+                "servicios"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Luz\",\n  \"empresa\": \"Luz del Sur\",\n  \"descripcion\": \"Energía eléctrica residencial\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: datos inválidos",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{servicio}}/api/servicios",
+              "host": [
+                "{{servicio}}"
+              ],
+              "path": [
+                "api",
+                "servicios"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"\",\n  \"empresa\": \"\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"error en nombre\", () => pm.expect(pm.response.json()).to.have.property(\"nombre\"));",
+                  "pm.test(\"error en empresa\", () => pm.expect(pm.response.json()).to.have.property(\"empresa\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar servicios",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{servicio}}/api/servicios",
+              "host": [
+                "{{servicio}}"
+              ],
+              "path": [
+                "api",
+                "servicios"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener Luz",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{servicio}}/api/servicios/{{idLuz}}",
+              "host": [
+                "{{servicio}}"
+              ],
+              "path": [
+                "api",
+                "servicios",
+                "{{idLuz}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"empresa = Luz del Sur\", () => pm.expect(pm.response.json().empresa).to.eql(\"Luz del Sur\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar Internet",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{servicio}}/api/servicios/{{idInternet}}",
+              "host": [
+                "{{servicio}}"
+              ],
+              "path": [
+                "api",
+                "servicios",
+                "{{idInternet}}"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Internet\",\n  \"empresa\": \"Movistar\",\n  \"descripcion\": \"Fibra óptica 600 Mbps\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"descripcion = Fibra óptica 600 Mbps\", () => pm.expect(pm.response.json().descripcion).to.eql(\"Fibra óptica 600 Mbps\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: servicio inexistente",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{servicio}}/api/servicios/9999",
+              "host": [
+                "{{servicio}}"
+              ],
+              "path": [
+                "api",
+                "servicios",
+                "9999"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Recibo",
+      "item": [
+        {
+          "name": "Registrar recibo de luz",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{recibo}}/api/recibos",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idCliente\": \"{{idJuan}}\",\n  \"idServicio\": \"{{idLuz}}\",\n  \"periodo\": \"2026-11\",\n  \"monto\": 125.5,\n  \"fechaVencimiento\": \"2026-11-20\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"estadoPago = PENDIENTE\", () => pm.expect(pm.response.json().estadoPago).to.eql(\"PENDIENTE\"));",
+                  "pm.collectionVariables.set(\"idReciboLuz\", pm.response.json().idRecibo);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar recibo de agua",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{recibo}}/api/recibos",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idCliente\": \"{{idJuan}}\",\n  \"idServicio\": \"{{idAgua}}\",\n  \"periodo\": \"2026-11\",\n  \"monto\": 48.9,\n  \"fechaVencimiento\": \"2026-11-25\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"idReciboAgua\", pm.response.json().idRecibo);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar recibos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{recibo}}/api/recibos",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener recibo de luz",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{recibo}}/api/recibos/{{idReciboLuz}}",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos",
+                "{{idReciboLuz}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar recibo de agua",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{recibo}}/api/recibos/{{idReciboAgua}}",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos",
+                "{{idReciboAgua}}"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idCliente\": \"{{idJuan}}\",\n  \"idServicio\": \"{{idAgua}}\",\n  \"periodo\": \"2026-11\",\n  \"monto\": 52.3,\n  \"fechaVencimiento\": \"2026-11-25\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"monto = 52.3\", () => pm.expect(pm.response.json().monto).to.eql(52.3));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Marcar pagado el recibo de luz",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{recibo}}/api/recibos/{{idReciboLuz}}/pagar",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos",
+                "{{idReciboLuz}}",
+                "pagar"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"estadoPago = PAGADO\", () => pm.expect(pm.response.json().estadoPago).to.eql(\"PAGADO\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar el recibo pagado",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{recibo}}/api/recibos/{{idReciboLuz}}",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos",
+                "{{idReciboLuz}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"estadoPago = PAGADO\", () => pm.expect(pm.response.json().estadoPago).to.eql(\"PAGADO\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: pagar dos veces",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{recibo}}/api/recibos/{{idReciboLuz}}/pagar",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos",
+                "{{idReciboLuz}}",
+                "pagar"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: modificar un recibo pagado",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{recibo}}/api/recibos/{{idReciboLuz}}",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos",
+                "{{idReciboLuz}}"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idCliente\": \"{{idJuan}}\",\n  \"idServicio\": \"{{idLuz}}\",\n  \"periodo\": \"2026-11\",\n  \"monto\": 10,\n  \"fechaVencimiento\": \"2026-11-20\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: eliminar un recibo pagado",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{recibo}}/api/recibos/{{idReciboLuz}}",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos",
+                "{{idReciboLuz}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: monto negativo y periodo vacío",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{recibo}}/api/recibos",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idCliente\": \"{{idJuan}}\",\n  \"idServicio\": \"{{idLuz}}\",\n  \"periodo\": \"\",\n  \"monto\": -5,\n  \"fechaVencimiento\": null\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"error en monto\", () => pm.expect(pm.response.json()).to.have.property(\"monto\"));",
+                  "pm.test(\"error en periodo\", () => pm.expect(pm.response.json()).to.have.property(\"periodo\"));",
+                  "pm.test(\"error en fechaVencimiento\", () => pm.expect(pm.response.json()).to.have.property(\"fechaVencimiento\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: monto cero y periodo mal escrito",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{recibo}}/api/recibos",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idCliente\": \"{{idJuan}}\",\n  \"idServicio\": \"{{idLuz}}\",\n  \"periodo\": \"2026-13\",\n  \"monto\": 0,\n  \"fechaVencimiento\": \"2026-12-20\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"error en monto\", () => pm.expect(pm.response.json()).to.have.property(\"monto\"));",
+                  "pm.test(\"error en periodo\", () => pm.expect(pm.response.json()).to.have.property(\"periodo\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: cliente inexistente",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{recibo}}/api/recibos",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idCliente\": 9999,\n  \"idServicio\": \"{{idLuz}}\",\n  \"periodo\": \"2026-12\",\n  \"monto\": 20,\n  \"fechaVencimiento\": \"2026-12-20\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: servicio inexistente",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{recibo}}/api/recibos",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idCliente\": \"{{idJuan}}\",\n  \"idServicio\": 9999,\n  \"periodo\": \"2026-12\",\n  \"monto\": 20,\n  \"fechaVencimiento\": \"2026-12-20\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: cliente inactivo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{recibo}}/api/recibos",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idCliente\": \"{{idAna}}\",\n  \"idServicio\": \"{{idLuz}}\",\n  \"periodo\": \"2026-11\",\n  \"monto\": 20,\n  \"fechaVencimiento\": \"2026-11-20\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: recibo repetido en el periodo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{recibo}}/api/recibos",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idCliente\": \"{{idJuan}}\",\n  \"idServicio\": \"{{idLuz}}\",\n  \"periodo\": \"2026-11\",\n  \"monto\": 20,\n  \"fechaVencimiento\": \"2026-11-20\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: recibo inexistente",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{recibo}}/api/recibos/9999",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos",
+                "9999"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: estado de filtro inválido",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{recibo}}/api/recibos?estado=VENCIDO",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "VENCIDO"
+                }
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar recibos pendientes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{recibo}}/api/recibos?estado=PENDIENTE",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "PENDIENTE"
+                }
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Recibos de Juan",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{recibo}}/api/recibos/cliente/{{idJuan}}",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos",
+                "cliente",
+                "{{idJuan}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar recibo de internet",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{recibo}}/api/recibos",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos"
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idCliente\": \"{{idJuan}}\",\n  \"idServicio\": \"{{idInternet}}\",\n  \"periodo\": \"2026-11\",\n  \"monto\": 89.9,\n  \"fechaVencimiento\": \"2026-11-28\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"idReciboInternet\", pm.response.json().idRecibo);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar recibo de internet (pendiente)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{recibo}}/api/recibos/{{idReciboInternet}}",
+              "host": [
+                "{{recibo}}"
+              ],
+              "path": [
+                "api",
+                "recibos",
+                "{{idReciboInternet}}"
+              ]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
