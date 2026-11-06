@@ -1,0 +1,975 @@
+{
+  "info": {
+    "name": "Lab S12 - Comunicación entre microservicios",
+    "description": "Eureka + OpenFeign: categoría, producto, cliente y pedido. Levantar primero eureka-server y luego los 4 servicios.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Categoría",
+      "item": [
+        {
+          "name": "Registrar categoría",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{categoria}}/api/categorias",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Tecnología\",\n  \"estado\": \"ACTIVO\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 201\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"categoriaId\", pm.response.json().id);",
+                  "pm.test(\"Nombre guardado\", () => pm.expect(pm.response.json().nombre).to.eql(\"Tecnología\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar categorías",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{categoria}}/api/categorias"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Es una lista\", () => pm.expect(pm.response.json()).to.be.an(\"array\").that.is.not.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar categoría",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{categoria}}/api/categorias/{{categoriaId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: categoría sin datos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{categoria}}/api/categorias",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"\",\n  \"estado\": \"\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Error en: nombre, estado\", () => { const j = pm.response.json(); pm.expect(j).to.have.property(\"nombre\"); pm.expect(j).to.have.property(\"estado\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: categoría que no existe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{categoria}}/api/categorias/999999"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Mensaje: Categoría no encontrada\", () => pm.expect(pm.response.json().mensaje).to.include(\"Categor\\u00eda no encontrada\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Producto (Feign a categoría)",
+      "item": [
+        {
+          "name": "Registrar producto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{producto}}/api/productos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n \"nombre\":\"Laptop\",\n \"precio\":2500,\n \"stock\":10,\n \"categoriaId\":{{categoriaId}}\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 201\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"productoId\", pm.response.json().id);",
+                  "pm.test(\"Trae la categoría por Feign\", () => pm.expect(pm.response.json().categoria.nombre).to.eql(\"Tecnología\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar producto con su categoría",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{producto}}/api/productos/{{productoId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Categoría completa\", () => { const c = pm.response.json().categoria; pm.expect(c.id).to.eql(pm.collectionVariables.get(\"categoriaId\")); pm.expect(c.estado).to.eql(\"ACTIVO\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar productos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{producto}}/api/productos"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar producto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{producto}}/api/productos/{{productoId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n \"nombre\":\"Laptop\",\n \"precio\":2500,\n \"stock\":8,\n \"categoriaId\":{{categoriaId}}\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Stock actualizado\", () => pm.expect(pm.response.json().stock).to.eql(8));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: precio cero y sin nombre",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{producto}}/api/productos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n \"nombre\":\"\",\n \"precio\":0,\n \"stock\":5,\n \"categoriaId\":{{categoriaId}}\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Error en: nombre, precio\", () => { const j = pm.response.json(); pm.expect(j).to.have.property(\"nombre\"); pm.expect(j).to.have.property(\"precio\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: categoría que no existe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{producto}}/api/productos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Mouse\",\n  \"precio\": 50,\n  \"stock\": 5,\n  \"categoriaId\": 999999\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Mensaje: Categoría no encontrada con id: 999999\", () => pm.expect(pm.response.json().mensaje).to.include(\"Categor\\u00eda no encontrada con id: 999999\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: producto que no existe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{producto}}/api/productos/999999"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Mensaje: Producto no encontrado\", () => pm.expect(pm.response.json().mensaje).to.include(\"Producto no encontrado\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Cliente",
+      "item": [
+        {
+          "name": "Registrar cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{cliente}}/api/clientes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Carlos\",\n  \"apellido\": \"Ramirez\",\n  \"direccion\": \"Av. Arequipa 123\",\n  \"estado\": \"ACTIVO\",\n  \"nroDni\": \"45678912\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 201\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"clienteId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar clientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{cliente}}/api/clientes"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar cliente por código",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{cliente}}/api/clientes/{{clienteId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"DNI de 8 dígitos\", () => pm.expect(pm.response.json().nroDni).to.match(/^\\d{8}$/));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar cliente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{cliente}}/api/clientes/{{clienteId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Carlos\",\n  \"apellido\": \"Ramirez\",\n  \"direccion\": \"Av. Brasil 456\",\n  \"estado\": \"ACTIVO\",\n  \"nroDni\": \"45678912\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Dirección actualizada\", () => pm.expect(pm.response.json().direccion).to.eql(\"Av. Brasil 456\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: cliente sin datos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{cliente}}/api/clientes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"\",\n  \"apellido\": \"\",\n  \"direccion\": \"\",\n  \"estado\": \"\",\n  \"nroDni\": \"\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Error en: nombre, apellido, direccion, estado, nroDni\", () => { const j = pm.response.json(); pm.expect(j).to.have.property(\"nombre\"); pm.expect(j).to.have.property(\"apellido\"); pm.expect(j).to.have.property(\"direccion\"); pm.expect(j).to.have.property(\"estado\"); pm.expect(j).to.have.property(\"nroDni\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: DNI de 7 dígitos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{cliente}}/api/clientes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ana\",\n  \"apellido\": \"Torres\",\n  \"direccion\": \"Jr. Lima 10\",\n  \"estado\": \"ACTIVO\",\n  \"nroDni\": \"1234567\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Mensaje del DNI\", () => pm.expect(pm.response.json().nroDni).to.eql(\"El DNI debe tener exactamente 8 dígitos\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: DNI con letras",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{cliente}}/api/clientes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ana\",\n  \"apellido\": \"Torres\",\n  \"direccion\": \"Jr. Lima 10\",\n  \"estado\": \"ACTIVO\",\n  \"nroDni\": \"1234567A\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Error en: nroDni\", () => { const j = pm.response.json(); pm.expect(j).to.have.property(\"nroDni\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: cliente que no existe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{cliente}}/api/clientes/999999"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Mensaje: Cliente no encontrado\", () => pm.expect(pm.response.json().mensaje).to.include(\"Cliente no encontrado\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar cliente para eliminar",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{cliente}}/api/clientes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Luis\",\n  \"apellido\": \"Quispe\",\n  \"direccion\": \"Calle 5\",\n  \"estado\": \"ACTIVO\",\n  \"nroDni\": \"87654321\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 201\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"clienteBorrarId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar cliente",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{cliente}}/api/clientes/{{clienteBorrarId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: cliente ya eliminado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{cliente}}/api/clientes/{{clienteBorrarId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Pedido (Feign a cliente y producto)",
+      "item": [
+        {
+          "name": "Registrar pedido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{pedido}}/api/pedidos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n \"clienteId\":{{clienteId}},\n \"productoId\":{{productoId}},\n \"cantidad\":2\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 201\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"pedidoId\", pm.response.json().id);",
+                  "pm.test(\"Empieza PENDIENTE\", () => pm.expect(pm.response.json().estado).to.eql(\"PENDIENTE\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar pedido completo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{pedido}}/api/pedidos/{{pedidoId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 200\", () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test(\"Datos del pedido\", () => { pm.expect(j.id).to.eql(pm.collectionVariables.get(\"pedidoId\")); pm.expect(j.cantidad).to.eql(2); });",
+                  "pm.test(\"Datos del cliente (cliente-service)\", () => { pm.expect(j.cliente.nombre).to.eql(\"Carlos\"); pm.expect(j.cliente.apellido).to.eql(\"Ramirez\"); });",
+                  "pm.test(\"Datos del producto (producto-service)\", () => { pm.expect(j.producto.nombre).to.eql(\"Laptop\"); pm.expect(j.producto.precio).to.eql(2500); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar pedidos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{pedido}}/api/pedidos"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Atender pedido",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{pedido}}/api/pedidos/{{pedidoId}}/estado",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"ATENDIDO\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Queda ATENDIDO\", () => pm.expect(pm.response.json().estado).to.eql(\"ATENDIDO\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Anular pedido",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{pedido}}/api/pedidos/{{pedidoId}}/estado",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"ANULADO\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Queda ANULADO\", () => pm.expect(pm.response.json().estado).to.eql(\"ANULADO\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: pedido sin cliente ni producto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{pedido}}/api/pedidos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cantidad\": 1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Error en: clienteId, productoId\", () => { const j = pm.response.json(); pm.expect(j).to.have.property(\"clienteId\"); pm.expect(j).to.have.property(\"productoId\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: cantidad cero",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{pedido}}/api/pedidos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n \"clienteId\":{{clienteId}},\n \"productoId\":{{productoId}},\n \"cantidad\":0\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Mensaje de cantidad\", () => pm.expect(pm.response.json().cantidad).to.eql(\"La cantidad debe ser mayor a cero\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: cliente que no existe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{pedido}}/api/pedidos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n \"clienteId\":999999,\n \"productoId\":{{productoId}},\n \"cantidad\":1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Mensaje: Cliente no encontrado con id: 999999\", () => pm.expect(pm.response.json().mensaje).to.include(\"Cliente no encontrado con id: 999999\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: producto que no existe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{pedido}}/api/pedidos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n \"clienteId\":{{clienteId}},\n \"productoId\":999999,\n \"cantidad\":1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Mensaje: Producto no encontrado con id: 999999\", () => pm.expect(pm.response.json().mensaje).to.include(\"Producto no encontrado con id: 999999\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: estado inválido",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{pedido}}/api/pedidos/{{pedidoId}}/estado",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"ELIMINADO\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Error en: estado\", () => { const j = pm.response.json(); pm.expect(j).to.have.property(\"estado\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: JSON mal formado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{pedido}}/api/pedidos",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"clienteId\": 1, "
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Mensaje: formato inválido\", () => pm.expect(pm.response.json().mensaje).to.include(\"formato inv\\u00e1lido\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: no se puede eliminar un pedido",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{pedido}}/api/pedidos/{{pedidoId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 405\", () => pm.response.to.have.status(405));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error: pedido que no existe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{pedido}}/api/pedidos/999999"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Mensaje: Pedido no encontrado\", () => pm.expect(pm.response.json().mensaje).to.include(\"Pedido no encontrado\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "cliente",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "categoria",
+      "value": "http://localhost:8082"
+    },
+    {
+      "key": "producto",
+      "value": "http://localhost:8083"
+    },
+    {
+      "key": "pedido",
+      "value": "http://localhost:8084"
+    },
+    {
+      "key": "categoriaId",
+      "value": ""
+    },
+    {
+      "key": "productoId",
+      "value": ""
+    },
+    {
+      "key": "clienteId",
+      "value": ""
+    },
+    {
+      "key": "clienteBorrarId",
+      "value": ""
+    },
+    {
+      "key": "pedidoId",
+      "value": ""
+    }
+  ]
+}
